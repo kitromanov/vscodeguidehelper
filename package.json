@@ -1,0 +1,72 @@
+{
+  "name": "guide-helper",
+  "displayName": "guide helper",
+  "description": "",
+  "version": "0.0.1",
+  "engines": {
+    "vscode": "^1.74.0"
+  },
+  "categories": [
+    "Other"
+  ],
+  "activationEvents": [
+    "onCommand:guide-helper.helloWorld"
+  ],
+  "main": "./extension.js",
+  "contributes": {
+    "keybindings": [
+      {
+        "command": "guide-helper.setBaseFileName",
+        "key": "ctrl+alt+b",
+        "mac": "shift+cmd+b"
+      },
+      {
+        "command": "guide-helper.addSnippet",
+        "key": "ctrl+alt+m",
+        "mac": "shift+cmd+m"
+      }
+    ],
+    "commands": [
+      {
+        "command": "guide-helper.helloWorld",
+        "title": "Hello World"
+      },
+      {
+        "command": "guide-helper.getText",
+        "title": "Get Text"
+      },
+      {
+        "command": "guide-helper.setBaseFileName",
+        "title": "Set BaseFileName"
+      },
+      {
+        "command": "guide-helper.addSnippet",
+        "title": "Reverse Word"
+      },
+      {
+        "command": "guide-helper.getBar",
+        "title": "Get Bar"
+      },
+      {
+        "command": "guide-helper.getInput",
+        "title": "Get Input"
+      }
+    ]
+  },
+  "scripts": {
+    "lint": "eslint .",
+    "pretest": "npm run lint",
+    "test": "node ./test/runTest.js"
+  },
+  "devDependencies": {
+    "@types/vscode": "^1.74.0",
+    "@types/glob": "^8.0.0",
+    "@types/mocha": "^10.0.1",
+    "@types/node": "16.x",
+    "eslint": "^8.28.0",
+    "glob": "^8.0.3",
+    "mocha": "^10.1.0",
+    "typescript": "^4.9.3",
+    "@vscode/test-electron": "^2.2.0"
+  }
+}
