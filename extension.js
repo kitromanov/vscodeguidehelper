@@ -1,11 +1,12 @@
 "use strict";
 const vscode = require('vscode');
-let util = require('util');
+const util = require('util');
 const { window, workspace, Uri } = require('vscode');
+const wordsMarker = ['password', 'key', 'seed'];
 
 let baseFileName = undefined;
-const wordsMarker = ['password', 'key', 'seed'];
 let myStatusBarItem = vscode.StatusBarItem;
+
 
 async function addSnippet(fileName, snippet) {
 	if (baseFileName !== undefined) {
@@ -26,6 +27,25 @@ function security_check(snippet) {
 			vscode.window.showWarningMessage('Please note that the code may contains secret data ' + '(' + word + ')');
 		}
 	});
+}
+
+function updateStatusBarItem() {
+	var n = getNumberOfSelectedLines(vscode.window.activeTextEditor);
+	if (n > 0) {
+		myStatusBarItem.text = "$(megaphone) ".concat(n, " line(s) selected");
+		myStatusBarItem.show();
+	}
+	else {
+		myStatusBarItem.hide();
+	}
+}
+
+function getNumberOfSelectedLines(editor) {
+	var lines = 0;
+	if (editor) {
+		lines = editor.selections.reduce(function (prev, curr) { return prev + (curr.end.line - curr.start.line); }, 0);
+	}
+	return lines + 1;
 }
 
 /**
@@ -49,7 +69,6 @@ function activate(context) {
 			const selection = editor.selection;
 			const snippet = '\n```\n' + document.getText(selection) + '\n```';
 			security_check(snippet);
-			
 			if (baseFileName !== undefined) {
 				addSnippet(baseFileName, snippet);
 			} else {
@@ -77,24 +96,4 @@ function activate(context) {
 
 module.exports = {
 	activate
-}
-
-
-function updateStatusBarItem() {
-	var n = getNumberOfSelectedLines(vscode.window.activeTextEditor);
-	if (n > 0) {
-		myStatusBarItem.text = "$(megaphone) ".concat(n, " line(s) selected");
-		myStatusBarItem.show();
-	}
-	else {
-		myStatusBarItem.hide();
-	}
-}
-
-function getNumberOfSelectedLines(editor) {
-	var lines = 0;
-	if (editor) {
-		lines = editor.selections.reduce(function (prev, curr) { return prev + (curr.end.line - curr.start.line); }, 0);
-	}
-	return lines + 1;
 }
