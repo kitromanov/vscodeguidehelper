@@ -2,9 +2,10 @@
 const vscode = require('vscode');
 let util = require('util');
 const { window, workspace, Uri } = require('vscode');
-let baseFileName = undefined;
 
+let baseFileName = undefined;
 const wordsMarker = ['password', 'key', 'seed'];
+let myStatusBarItem = vscode.StatusBarItem;
 
 async function addSnippet(fileName, snippet) {
 	if (baseFileName !== undefined) {
@@ -48,6 +49,7 @@ function activate(context) {
 			const selection = editor.selection;
 			const snippet = '\n```\n' + document.getText(selection) + '\n```';
 			security_check(snippet);
+			
 			if (baseFileName !== undefined) {
 				addSnippet(baseFileName, snippet);
 			} else {
@@ -60,10 +62,39 @@ function activate(context) {
 		}
 	});
 
+	myStatusBarItem = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Right, 100);
+	myStatusBarItem.command = 'guide-helper.addSnippet';
+
+	context.subscriptions.push(myStatusBarItem);
+	context.subscriptions.push(vscode.window.onDidChangeActiveTextEditor(updateStatusBarItem));
+	context.subscriptions.push(vscode.window.onDidChangeTextEditorSelection(updateStatusBarItem));
+
+	updateStatusBarItem();
+
 	context.subscriptions.push(setBaseFileNameCommand);
 	context.subscriptions.push(addSnippetCommand);
 }
 
 module.exports = {
 	activate
+}
+
+
+function updateStatusBarItem() {
+	var n = getNumberOfSelectedLines(vscode.window.activeTextEditor);
+	if (n > 0) {
+		myStatusBarItem.text = "$(megaphone) ".concat(n, " line(s) selected");
+		myStatusBarItem.show();
+	}
+	else {
+		myStatusBarItem.hide();
+	}
+}
+
+function getNumberOfSelectedLines(editor) {
+	var lines = 0;
+	if (editor) {
+		lines = editor.selections.reduce(function (prev, curr) { return prev + (curr.end.line - curr.start.line); }, 0);
+	}
+	return lines + 1;
 }
